@@ -142,10 +142,10 @@ function showEventNotification(event) {
     const notification = document.createElement('div');
     notification.className = 'event-notification';
     notification.innerHTML = `
-        <h3>🏆 历史事件触发</h3>
-        <h4>${event.name}</h4>
-        <p>${event.description}</p>
-        <p class="reward">奖励: ${event.rewardDesc}</p>
+        <h3>${t('eventTriggered')}</h3>
+        <h4>${t(event.id + 'Name')}</h4>
+        <p>${t(event.id + 'Desc')}</p>
+        <p class="reward">${t('reward')}: ${event.rewardDesc}</p>
     `;
     
     document.body.appendChild(notification);
@@ -183,6 +183,11 @@ function selectFaction(factionId) {
 
 // 初始化游戏
 function initGame() {
+    // 应用保存的语言设置
+    document.documentElement.lang = currentLang === 'zh' ? 'zh-CN' : 'en';
+    document.title = t('title');
+    renderAllText();
+    
     // 尝试加载存档
     const loaded = loadGame();
     

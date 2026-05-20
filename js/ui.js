@@ -36,13 +36,13 @@ function renderResources() {
     const production = getProductionPerSecond();
     
     displays.grain.textContent = formatNumber(getResource('grain'));
-    displays.grainRate.textContent = formatRate(production.grain) + '/s';
+    displays.grainRate.textContent = formatRate(production.grain) + t('perSecond');
     
     displays.soldiers.textContent = formatNumber(getResource('soldiers'));
-    displays.soldiersRate.textContent = formatRate(production.soldiers) + '/s';
+    displays.soldiersRate.textContent = formatRate(production.soldiers) + t('perSecond');
     
     displays.gold.textContent = formatNumber(getResource('gold'));
-    displays.goldRate.textContent = formatRate(production.gold) + '/s';
+    displays.goldRate.textContent = formatRate(production.gold) + t('perSecond');
     
     displays.territory.textContent = formatNumber(getResource('territory'));
     displays.prestige.textContent = formatNumber(getResource('prestige'));
@@ -75,12 +75,12 @@ function renderBuildings() {
                 .join(', ');
             
             const productionStr = Object.entries(building.baseProduction)
-                .map(([res, amt]) => `+${amt} ${getResourceName(res)}/s`)
+                .map(([res, amt]) => `+${amt} ${getResourceName(res)}${t('perSecond')}`)
                 .join(', ');
             
             card.innerHTML = `
                 <div class="building-header">
-                    <span class="building-name">${building.name}</span>
+                    <span class="building-name">${t(building.id + 'Name')}</span>
                     <span class="building-count">${count}</span>
                 </div>
                 <div class="building-info">
@@ -88,7 +88,7 @@ function renderBuildings() {
                     <span class="building-cost">${costStr}</span>
                 </div>
                 <button class="build-btn" ${affordable ? '' : 'disabled'}>
-                    购买 1 个
+                    ${t('buyOne')}
                 </button>
             `;
             
@@ -100,10 +100,11 @@ function renderBuildings() {
         } else {
             // 只更新数值
             const card = buildingCards[building.id];
+            card.querySelector('.building-name').textContent = t(building.id + 'Name');
             card.querySelector('.building-count').textContent = count;
             card.querySelector('.building-production').textContent = 
                 Object.entries(building.baseProduction)
-                    .map(([res, amt]) => `+${amt} ${getResourceName(res)}/s`)
+                    .map(([res, amt]) => `+${amt} ${getResourceName(res)}${t('perSecond')}`)
                     .join(', ');
             card.querySelector('.building-cost').textContent = 
                 Object.entries(cost)
@@ -111,6 +112,7 @@ function renderBuildings() {
                     .join(', ');
             
             const btn = card.querySelector('.build-btn');
+            btn.textContent = t('buyOne');
             btn.disabled = !affordable;
             
             // 更新样式类
@@ -119,7 +121,7 @@ function renderBuildings() {
         }
     }
     
-    // 移除不再需要的卡片（理论上不会发生）
+    // 移除不再需要的卡片
     for (const id of Object.keys(buildingCards)) {
         if (!currentIds.has(id)) {
             buildingCards[id].remove();
@@ -153,12 +155,12 @@ function renderHeroes() {
                 .join(', ');
             
             card.innerHTML = `
-                <div class="hero-name">${hero.name}</div>
+                <div class="hero-name">${t(hero.id + 'Name')}</div>
                 <div class="hero-quality ${hero.quality}">${hero.quality.toUpperCase()}</div>
                 <div class="hero-bonus">${hero.bonusDesc}</div>
-                ${!recruited ? `<div class="hero-cost">招募消耗: ${costStr}</div>` : ''}
+                ${!recruited ? `<div class="hero-cost">${t('recruitCost')}: ${costStr}</div>` : ''}
                 <button class="recruit-btn ${recruited ? 'recruited' : ''}" ${recruited || !affordable ? 'disabled' : ''}>
-                    ${recruited ? '已招募' : '招募'}
+                    ${recruited ? t('recruited') : t('recruit')}
                 </button>
             `;
             
@@ -174,8 +176,11 @@ function renderHeroes() {
             const card = heroCards[hero.id];
             const btn = card.querySelector('.recruit-btn');
             
+            // 更新名称（语言切换时）
+            card.querySelector('.hero-name').textContent = t(hero.id + 'Name');
+            
             if (recruited) {
-                btn.textContent = '已招募';
+                btn.textContent = t('recruited');
                 btn.disabled = true;
                 btn.classList.add('recruited');
                 card.classList.add('recruited');
@@ -184,6 +189,7 @@ function renderHeroes() {
                 const costEl = card.querySelector('.hero-cost');
                 if (costEl) costEl.remove();
             } else {
+                btn.textContent = t('recruit');
                 btn.disabled = !affordable;
             }
         }
@@ -220,10 +226,10 @@ function renderEvents() {
                 .join(', ');
             
             card.innerHTML = `
-                <div class="event-name">${triggered ? '✅ ' : ''}${event.name}</div>
-                <div class="event-desc">${event.description}</div>
-                <div class="event-reward">奖励: ${event.rewardDesc}</div>
-                ${!triggered ? `<div class="event-progress">触发条件: ${progressStr}</div>` : ''}
+                <div class="event-name">${triggered ? '✅ ' : ''}${t(event.id + 'Name')}</div>
+                <div class="event-desc">${t(event.id + 'Desc')}</div>
+                <div class="event-reward">${t('reward')}: ${event.rewardDesc}</div>
+                ${!triggered ? `<div class="event-progress">${t('triggerCondition')}: ${progressStr}</div>` : ''}
             `;
             
             containers.events.appendChild(card);
@@ -231,10 +237,11 @@ function renderEvents() {
         } else {
             // 只更新进度和状态
             const card = eventCards[event.id];
+            card.querySelector('.event-name').textContent = `${triggered ? '✅ ' : ''}${t(event.id + 'Name')}`;
+            card.querySelector('.event-desc').textContent = t(event.id + 'Desc');
             
             if (triggered && !card.classList.contains('triggered')) {
                 card.classList.add('triggered');
-                card.querySelector('.event-name').textContent = `✅ ${event.name}`;
                 
                 // 移除进度显示
                 const progressEl = card.querySelector('.event-progress');
@@ -250,7 +257,7 @@ function renderEvents() {
                 
                 const progressEl = card.querySelector('.event-progress');
                 if (progressEl) {
-                    progressEl.textContent = `触发条件: ${progressStr}`;
+                    progressEl.textContent = `${t('triggerCondition')}: ${progressStr}`;
                 }
             }
         }
@@ -265,16 +272,16 @@ function renderEvents() {
     }
 }
 
-// 获取资源中文名
+// 获取资源名称（带emoji和翻译）
 function getResourceName(resource) {
-    const names = {
-        grain: '🌾粮草',
-        soldiers: '⚔️兵力',
-        gold: '💰金币',
-        territory: '🏯领土',
-        prestige: '⭐声望'
+    const icons = {
+        grain: '🌾',
+        soldiers: '⚔️',
+        gold: '💰',
+        territory: '🏯',
+        prestige: '⭐'
     };
-    return names[resource] || resource;
+    return (icons[resource] || '') + t(resource);
 }
 
 // 显示势力选择弹窗
@@ -282,6 +289,7 @@ function showFactionModal() {
     const modal = document.getElementById('faction-modal');
     if (modal) {
         modal.classList.add('active');
+        renderAllText();
     }
     
     // 绑定势力选择事件
@@ -297,10 +305,11 @@ function showFactionModal() {
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('save-btn').addEventListener('click', () => {
         saveGame();
-        alert('游戏已保存！');
+        alert(t('saveSuccess'));
     });
     
     document.getElementById('export-btn').addEventListener('click', exportSave);
     document.getElementById('import-btn').addEventListener('click', importSave);
     document.getElementById('reset-btn').addEventListener('click', resetGame);
+    document.getElementById('lang-btn').addEventListener('click', toggleLanguage);
 });

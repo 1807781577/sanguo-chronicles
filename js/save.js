@@ -84,19 +84,18 @@ function exportSave() {
     // 复制到剪贴板
     if (navigator.clipboard) {
         navigator.clipboard.writeText(encoded).then(() => {
-            alert('存档已复制到剪贴板！');
+            alert(t('saveSuccess'));
         }).catch(() => {
-            // 降级方案：显示在弹窗中
-            prompt('复制以下存档代码：', encoded);
+            prompt(t('exportPrompt'), encoded);
         });
     } else {
-        prompt('复制以下存档代码：', encoded);
+        prompt(t('exportPrompt'), encoded);
     }
 }
 
 // 导入存档
 function importSave() {
-    const encoded = prompt('请粘贴存档代码：');
+    const encoded = prompt(t('importPrompt'));
     if (!encoded) return;
     
     try {
@@ -106,22 +105,22 @@ function importSave() {
         localStorage.setItem(SAVE_KEY, json);
         loadGame();
         renderUI();
-        alert('存档导入成功！');
+        alert(t('importSuccess'));
     } catch (e) {
-        console.error('导入失败:', e);
-        alert('导入失败：存档代码无效');
+        console.error('Import failed:', e);
+        alert(t('importFail'));
     }
 }
 
 // 重置游戏
 function resetGame() {
-    if (confirm('确定要重置游戏吗？所有进度都会丢失！')) {
-        if (confirm('再次确认：真的要重置吗？此操作不可撤销！')) {
+    if (confirm(t('resetConfirm1'))) {
+        if (confirm(t('resetConfirm2'))) {
             localStorage.removeItem(SAVE_KEY);
             resetState();
             renderUI();
             showFactionModal();
-            alert('游戏已重置');
+            alert(t('resetDone'));
         }
     }
 }

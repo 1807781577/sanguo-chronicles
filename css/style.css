@@ -418,6 +418,17 @@ section h2 {
     background: #a41830;
 }
 
+.btn-lang {
+    background: var(--accent-blue);
+    color: white;
+    font-weight: bold;
+    min-width: 50px;
+}
+
+.btn-lang:hover {
+    background: #1e4a63;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     #resource-bar {
