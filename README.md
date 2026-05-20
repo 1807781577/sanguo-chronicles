@@ -21,7 +21,9 @@
 
 ## 快速开始
 
-直接在浏览器中打开 `index.html` 即可游玩。
+**在线游玩**：https://1807781577.github.io/sanguo-chronicles/
+
+或者直接在浏览器中打开 `index.html` 即可游玩。
 
 ## 项目结构
 
