@@ -1,4 +1,6 @@
-# 三国风云：霸业
+# 三国风云：霸业 | Three Kingdoms: Hegemony
+
+**中文** | [English](#english)
 
 一款三国主题的增量游戏（Incremental/Idle Game），使用纯 HTML/CSS/JavaScript 开发。
 
@@ -59,6 +61,72 @@
 - 数值平衡待优化
 - 攻城系统（Prestige机制）待实现
 - 缺少音效和动画
+
+---
+
+<a name="english"></a>
+
+# Three Kingdoms: Hegemony
+
+An incremental/idle game set in the Three Kingdoms era, built with pure HTML/CSS/JavaScript.
+
+## Features
+
+- **Strategy Gameplay**: Manage 5 resources - Grain, Soldiers, Gold, Territory, Prestige
+- **6 Buildings**: Farm, Barracks, Market, Training Ground, Hero Hall, City
+- **12 Heroes**: Recruit famous generals like Guan Yu, Zhuge Liang, Cao Cao, Liu Bei, Sun Quan
+- **Faction Choice**: Wei / Shu / Wu, each with unique bonuses
+- **Historical Events**: Yellow Turban Rebellion, Battle of Red Cliffs, Battle of Guandu, etc.
+- **Ink Wash Art Style**: Traditional Chinese visual aesthetic
+- **Offline Progress**: Earn resources while away (up to 8 hours)
+- **Save System**: Auto-save + Export/Import functionality
+
+## Tech Stack
+
+- Native HTML5 / CSS3 / JavaScript (ES6+)
+- No framework dependencies
+- localStorage for save data
+
+## Quick Start
+
+**Play Online**: https://1807781577.github.io/sanguo-chronicles/
+
+Or simply open `index.html` in your browser.
+
+## Project Structure
+
+```
+├── index.html          # Main page
+├── css/
+│   └── style.css       # Ink wash style CSS
+├── js/
+│   ├── config.js       # Game config (buildings, heroes, events)
+│   ├── state.js        # Game state management
+│   ├── game.js         # Core game loop
+│   ├── ui.js           # UI rendering (incremental DOM updates)
+│   ├── save.js         # Save system
+│   └── utils.js        # Utility functions
+└── assets/
+```
+
+## Changelog
+
+### v0.1.0 (2026-05-20) - Initial Release
+
+**Core Systems**
+- [x] Resource system (Grain, Soldiers, Gold, Territory, Prestige)
+- [x] Building system (6 buildings with escalating costs)
+- [x] Hero system (12 heroes, SSR/SR/R rarity)
+- [x] Faction selection (Wei/Shu/Wu)
+- [x] Historical events (6 milestone events)
+- [x] Game loop (requestAnimationFrame + delta time)
+- [x] Offline progress calculation
+- [x] Save system (auto-save, export/import)
+
+**Known Issues**
+- Number balancing needs optimization
+- Conquest system (Prestige mechanic) not yet implemented
+- Missing sound effects and animations
 
 ## License
 
