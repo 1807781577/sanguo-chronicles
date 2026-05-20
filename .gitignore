@@ -1,0 +1,4 @@
+# Git Ignore
+*.log
+.DS_Store
+node_modules/

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三国风云：霸业</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- 势力选择弹窗 -->
+        <div id="faction-modal" class="modal">
+            <div class="modal-content">
+                <h2>选择你的势力</h2>
+                <p>不同的势力将带来不同的初始加成</p>
+                <div class="faction-options">
+                    <div class="faction-card" data-faction="wei">
+                        <h3>魏</h3>
+                        <p>金币产出 +10%</p>
+                    </div>
+                    <div class="faction-card" data-faction="shu">
+                        <h3>蜀</h3>
+                        <p>声望获取 +10%</p>
+                    </div>
+                    <div class="faction-card" data-faction="wu">
+                        <h3>吴</h3>
+                        <p>粮草生产 +10%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 顶部资源栏 -->
+        <header id="resource-bar">
+            <div class="resource" id="resource-grain">
+                <span class="resource-icon">🌾</span>
+                <span class="resource-name">粮草</span>
+                <span class="resource-amount" id="grain-amount">0</span>
+                <span class="resource-rate" id="grain-rate">+0/s</span>
+            </div>
+            <div class="resource" id="resource-soldiers">
+                <span class="resource-icon">⚔️</span>
+                <span class="resource-name">兵力</span>
+                <span class="resource-amount" id="soldiers-amount">0</span>
+                <span class="resource-rate" id="soldiers-rate">+0/s</span>
+            </div>
+            <div class="resource" id="resource-gold">
+                <span class="resource-icon">💰</span>
+                <span class="resource-name">金币</span>
+                <span class="resource-amount" id="gold-amount">0</span>
+                <span class="resource-rate" id="gold-rate">+0/s</span>
+            </div>
+            <div class="resource" id="resource-territory">
+                <span class="resource-icon">🏯</span>
+                <span class="resource-name">领土</span>
+                <span class="resource-amount" id="territory-amount">0</span>
+            </div>
+            <div class="resource" id="resource-prestige">
+                <span class="resource-icon">⭐</span>
+                <span class="resource-name">声望</span>
+                <span class="resource-amount" id="prestige-amount">0</span>
+            </div>
+        </header>
+
+        <!-- 主游戏区 -->
+        <main id="game-main">
+            <!-- 建筑区 -->
+            <section id="buildings-section">
+                <h2>建筑</h2>
+                <div id="buildings-container"></div>
+            </section>
+
+            <!-- 武将区 -->
+            <section id="heroes-section">
+                <h2>武将</h2>
+                <div id="heroes-container"></div>
+            </section>
+
+            <!-- 历史事件区 -->
+            <section id="events-section">
+                <h2>历史事件</h2>
+                <div id="events-container"></div>
+            </section>
+        </main>
+
+        <!-- 底部操作栏 -->
+        <footer id="game-footer">
+            <button id="save-btn" class="btn">保存</button>
+            <button id="export-btn" class="btn">导出存档</button>
+            <button id="import-btn" class="btn">导入存档</button>
+            <button id="reset-btn" class="btn btn-danger">重置游戏</button>
+        </footer>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/save.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script>
+        // 页面加载后初始化游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

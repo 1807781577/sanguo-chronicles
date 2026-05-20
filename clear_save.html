@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>清除存档</title>
+</head>
+<body>
+    <h1>清除三国风云存档</h1>
+    <button onclick="clearSave()">清除存档</button>
+    <p id="status"></p>
+    <script>
+        function clearSave() {
+            localStorage.removeItem('sanguo_incremental_save');
+            document.getElementById('status').textContent = '存档已清除！现在可以重新打开 index.html';
+        }
+    </script>
+</body>
+</html>

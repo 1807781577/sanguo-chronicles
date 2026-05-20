@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>调试存档</title>
+    <style>body{font-family:monospace;white-space:pre;}</style>
+</head>
+<body>
+<h2>当前存档数据</h2>
+<div id="data"></div>
+<button onclick="clearSave()">清除存档</button>
+<script>
+    const raw = localStorage.getItem('sanguo_incremental_save');
+    if (raw) {
+        const data = JSON.parse(raw);
+        document.getElementById('data').textContent = JSON.stringify(data, null, 2);
+    } else {
+        document.getElementById('data').textContent = '没有存档数据';
+    }
+    function clearSave() {
+        localStorage.removeItem('sanguo_incremental_save');
+        location.reload();
+    }
+</script>
+</body>
+</html>

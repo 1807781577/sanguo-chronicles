@@ -1,0 +1,454 @@
+/* 三国风云：霸业 - 水墨风样式 */
+
+:root {
+    --ink-black: #1a1a2e;
+    --ink-gray: #4a4a5a;
+    --paper-white: #f5f0e8;
+    --paper-dark: #e8e0d0;
+    --accent-red: #c41e3a;
+    --accent-gold: #d4a017;
+    --accent-blue: #2c5f7c;
+    --accent-green: #4a7c59;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", "SimHei", sans-serif;
+    background-color: var(--paper-white);
+    background-image: 
+        radial-gradient(ellipse at top left, rgba(0,0,0,0.03) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(0,0,0,0.03) 0%, transparent 50%);
+    color: var(--ink-black);
+    min-height: 100vh;
+}
+
+/* 模态弹窗 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--paper-white);
+    border: 3px solid var(--ink-black);
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--accent-red);
+}
+
+.modal-content p {
+    color: var(--ink-gray);
+    margin-bottom: 1.5rem;
+}
+
+.faction-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.faction-card {
+    background: var(--paper-dark);
+    border: 2px solid var(--ink-gray);
+    padding: 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.faction-card:hover {
+    border-color: var(--accent-red);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(196, 30, 58, 0.2);
+}
+
+.faction-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--ink-black);
+}
+
+.faction-card p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* 顶部资源栏 */
+#resource-bar {
+    background: linear-gradient(180deg, var(--ink-black) 0%, #2a2a3e 100%);
+    color: var(--paper-white);
+    padding: 1rem 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.resource {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    min-width: 150px;
+}
+
+.resource-icon {
+    font-size: 1.5rem;
+}
+
+.resource-name {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.resource-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-gold);
+}
+
+.resource-rate {
+    font-size: 0.8rem;
+    color: var(--accent-green);
+}
+
+/* 主游戏区 */
+#game-main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+section {
+    margin-bottom: 2rem;
+}
+
+section h2 {
+    font-size: 1.5rem;
+    color: var(--ink-black);
+    border-bottom: 2px solid var(--ink-black);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* 建筑卡片 */
+#buildings-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.building-card {
+    background: var(--paper-dark);
+    border: 2px solid var(--ink-gray);
+    border-radius: 6px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.building-card.affordable {
+    border-color: var(--accent-green);
+    cursor: pointer;
+}
+
+.building-card.affordable:hover {
+    box-shadow: 0 3px 10px rgba(74, 124, 89, 0.3);
+    transform: translateY(-2px);
+}
+
+.building-card.locked {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.building-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.building-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--ink-black);
+}
+
+.building-count {
+    font-size: 0.9rem;
+    color: var(--ink-gray);
+    background: var(--paper-white);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.building-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--ink-gray);
+    margin-bottom: 0.5rem;
+}
+
+.building-cost {
+    color: var(--accent-gold);
+    font-weight: bold;
+}
+
+.build-btn {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--accent-green);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.build-btn:hover:not(:disabled) {
+    background: #3a6c49;
+}
+
+.build-btn:disabled {
+    background: var(--ink-gray);
+    cursor: not-allowed;
+}
+
+/* 武将卡片 */
+#heroes-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.hero-card {
+    background: var(--paper-dark);
+    border: 2px solid var(--ink-gray);
+    border-radius: 6px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.hero-card.recruited {
+    border-color: var(--accent-gold);
+    background: linear-gradient(135deg, var(--paper-dark), #f0e8d0);
+}
+
+.hero-card.ssr {
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 10px rgba(212, 160, 23, 0.3);
+}
+
+.hero-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.hero-quality {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.hero-quality.ssr {
+    background: var(--accent-gold);
+    color: white;
+}
+
+.hero-quality.sr {
+    background: var(--accent-red);
+    color: white;
+}
+
+.hero-quality.r {
+    background: var(--accent-blue);
+    color: white;
+}
+
+.hero-quality.n {
+    background: var(--ink-gray);
+    color: white;
+}
+
+.hero-bonus {
+    font-size: 0.9rem;
+    color: var(--ink-gray);
+    margin-bottom: 0.5rem;
+}
+
+.hero-cost {
+    font-size: 0.9rem;
+    color: var(--accent-gold);
+    margin-bottom: 0.5rem;
+}
+
+.recruit-btn {
+    padding: 0.5rem 1rem;
+    background: var(--accent-red);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.recruit-btn:hover:not(:disabled) {
+    background: #a41830;
+}
+
+.recruit-btn:disabled {
+    background: var(--ink-gray);
+    cursor: not-allowed;
+}
+
+.recruit-btn.recruited {
+    background: var(--accent-green);
+}
+
+/* 历史事件 */
+#events-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.event-card {
+    background: var(--paper-dark);
+    border: 2px solid var(--ink-gray);
+    border-radius: 6px;
+    padding: 1rem;
+    opacity: 0.5;
+}
+
+.event-card.triggered {
+    opacity: 1;
+    border-color: var(--accent-gold);
+    background: linear-gradient(135deg, var(--paper-dark), #f0e8d0);
+}
+
+.event-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    color: var(--ink-black);
+}
+
+.event-desc {
+    font-size: 0.9rem;
+    color: var(--ink-gray);
+    margin-bottom: 0.5rem;
+}
+
+.event-reward {
+    font-size: 0.85rem;
+    color: var(--accent-green);
+}
+
+/* 底部操作栏 */
+#game-footer {
+    background: var(--ink-black);
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    background: var(--paper-dark);
+    color: var(--ink-black);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    background: var(--paper-white);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: var(--accent-red);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #a41830;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    #resource-bar {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .resource {
+        min-width: auto;
+        padding: 0.3rem 0.5rem;
+    }
+
+    .resource-name {
+        display: none;
+    }
+
+    #game-main {
+        margin: 1rem auto;
+    }
+
+    #buildings-container,
+    #heroes-container,
+    #events-container {
+        grid-template-columns: 1fr;
+    }
+
+    #game-footer {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
