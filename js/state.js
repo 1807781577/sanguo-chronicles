@@ -22,10 +22,13 @@ function getDefaultState() {
         },
         heroes: {}, // { heroId: true }
         triggeredEvents: [], // [eventId]
+        conqueredCities: {},
+        unificationAchieved: false,
         stats: {
             totalGrainEarned: 0,
             totalSoldiersEarned: 0,
             totalGoldEarned: 0,
+            maxPrestige: 0,
             startTime: Date.now(),
             totalPlayTime: 0
         }
@@ -50,6 +53,9 @@ function addResource(resource, amount) {
     if (resource === 'grain') gameState.stats.totalGrainEarned += amount;
     if (resource === 'soldiers') gameState.stats.totalSoldiersEarned += amount;
     if (resource === 'gold') gameState.stats.totalGoldEarned += amount;
+    if (resource === 'prestige' && gameState.resources[resource] > gameState.stats.maxPrestige) {
+        gameState.stats.maxPrestige = gameState.resources[resource];
+    }
 }
 
 // 获取建筑数量
@@ -65,6 +71,17 @@ function hasHero(heroId) {
 // 检查事件是否已触发
 function isEventTriggered(eventId) {
     return gameState.triggeredEvents.includes(eventId);
+}
+
+// 检查事件是否可挑战（条件满足但尚未触发）
+function canChallengeEvent(eventId) {
+    if (isEventTriggered(eventId)) return false;
+    const event = HISTORICAL_EVENTS.find(e => e.id === eventId);
+    if (!event) return false;
+    for (const [resource, amount] of Object.entries(event.trigger)) {
+        if (getResource(resource) < amount) return false;
+    }
+    return true;
 }
 
 // 触发事件
@@ -104,6 +121,26 @@ function getMultiplier(type) {
         }
     }
 
+    // 历史事件加成
+    for (const event of HISTORICAL_EVENTS) {
+        if (isEventTriggered(event.id) && event.bonus && event.bonus[type]) {
+            multiplier += event.bonus[type];
+        }
+    }
+
+    // 征服城市加成
+    for (const city of CITIES) {
+        if (gameState.conqueredCities[city.id] && city.bonus && city.bonus[type]) {
+            multiplier += city.bonus[type];
+        }
+    }
+
+    // 天下一统加成
+    if (gameState.unificationAchieved) {
+        const unificationBonuses = { goldMultiplier: 0.25, grainMultiplier: 0.25, soldierMultiplier: 0.25, prestigeMultiplier: 0.25 };
+        if (unificationBonuses[type]) multiplier += unificationBonuses[type];
+    }
+
     return multiplier;
 }
 
@@ -113,6 +150,7 @@ function getProductionPerSecond() {
         grain: 0,
         soldiers: 0,
         gold: 0,
+        territory: 0,
         prestige: 0
     };
 
@@ -135,10 +173,14 @@ function getProductionPerSecond() {
         production.soldiers += trainingGroundCount * BUILDINGS.training_ground.baseProduction.soldiers * getMultiplier('soldierMultiplier');
     }
 
-    // 市场产出金币
+    // 市场产出金币（逐级递增）
     const marketCount = getBuildingCount('market');
     if (marketCount > 0) {
-        production.gold += marketCount * BUILDINGS.market.baseProduction.gold * getMultiplier('goldMultiplier');
+        const marketGrowth = BUILDINGS.market.productionGrowth ? BUILDINGS.market.productionGrowth.gold : 0;
+        const goldMultiplier = getMultiplier('goldMultiplier');
+        for (let i = 0; i < marketCount; i++) {
+            production.gold += (BUILDINGS.market.baseProduction.gold + marketGrowth * i) * goldMultiplier;
+        }
     }
 
     // 城池产出
@@ -146,6 +188,7 @@ function getProductionPerSecond() {
     if (cityCount > 0) {
         production.gold += cityCount * BUILDINGS.city.baseProduction.gold * getMultiplier('goldMultiplier');
         production.grain += cityCount * BUILDINGS.city.baseProduction.grain * getMultiplier('grainMultiplier');
+        production.territory += cityCount * 0.1;
     }
 
     // 聚贤庄产出声望
@@ -163,4 +206,46 @@ function resetState() {
     // 保留统计信息的某些部分
     defaultState.stats.startTime = Date.now();
     gameState = defaultState;
+}
+
+// 检查城市是否已征服
+function isCityConquered(cityId) {
+    return gameState.conqueredCities[cityId] || false;
+}
+
+// 检查城市是否可攻城
+function canAttackCity(cityId) {
+    const city = CITIES.find(c => c.id === cityId);
+    if (!city) return false;
+    if (isCityConquered(cityId)) return false;
+    // 检查历史事件解锁
+    if (city.unlockEvent && !isEventTriggered(city.unlockEvent)) return false;
+    // 检查防御门槛
+    if (getResource('soldiers') < city.defense) return false;
+    // 检查资源消耗
+    for (const [resource, amount] of Object.entries(city.cost)) {
+        if (getResource(resource) < amount) return false;
+    }
+    return true;
+}
+
+// 检查天下一统
+function checkUnification() {
+    if (gameState.unificationAchieved) return false;
+    const allConquered = CITIES.every(city => gameState.conqueredCities[city.id]);
+    if (allConquered) {
+        gameState.unificationAchieved = true;
+        // 自动触发三国归晋事件
+        if (!isEventTriggered('unification')) {
+            triggerEvent('unification');
+            const event = HISTORICAL_EVENTS.find(e => e.id === 'unification');
+            if (event) {
+                for (const [res, amt] of Object.entries(event.reward)) {
+                    addResource(res, amt);
+                }
+            }
+        }
+        return true;
+    }
+    return false;
 }

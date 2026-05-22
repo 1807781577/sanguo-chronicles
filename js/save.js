@@ -69,8 +69,10 @@ function applyOfflineProgress(seconds) {
 function migrateSave(saveData) {
     console.log(`存档迁移: v${saveData.version} -> v${SAVE_VERSION}`);
     
-    // 未来版本迁移逻辑可以在这里添加
-    // if (saveData.version < 2) { ... }
+    if (saveData.version < 2) {
+        saveData.conqueredCities = saveData.conqueredCities || {};
+        saveData.unificationAchieved = saveData.unificationAchieved || false;
+    }
     
     saveData.version = SAVE_VERSION;
 }
@@ -118,6 +120,7 @@ function resetGame() {
         if (confirm(t('resetConfirm2'))) {
             localStorage.removeItem(SAVE_KEY);
             resetState();
+            clearCachedCards();
             renderUI();
             showFactionModal();
             alert(t('resetDone'));

@@ -14,9 +14,6 @@ function gameLoop() {
     // 更新资源
     updateResources(delta);
 
-    // 检查历史事件
-    checkHistoricalEvents();
-
     // 更新UI（降频渲染）
     if (now - lastUIRender > UI_RENDER_INTERVAL) {
         renderUI();
@@ -54,6 +51,11 @@ function updateResources(delta) {
 
     // 金币生产
     addResource('gold', production.gold * delta);
+
+    // 领土生产
+    if (production.territory > 0) {
+        addResource('territory', production.territory * delta);
+    }
 
     // 声望生产
     addResource('prestige', production.prestige * delta);
@@ -96,45 +98,128 @@ function recruitHero(heroId) {
     renderUI();
 }
 
-// 检查历史事件
-function checkHistoricalEvents() {
-    for (const event of HISTORICAL_EVENTS) {
-        if (isEventTriggered(event.id)) continue;
-        
-        let triggered = true;
-        
-        // 检查触发条件
-        for (const [resource, amount] of Object.entries(event.trigger)) {
-            if (getResource(resource) < amount) {
-                triggered = false;
-                break;
-            }
-        }
-        
-        if (triggered) {
-            triggerEvent(event.id);
-            
-            // 发放奖励
-            if (event.reward.prestige) {
-                addResource('prestige', event.reward.prestige);
-            }
-            if (event.reward.gold) {
-                addResource('gold', event.reward.gold);
-            }
-            if (event.reward.grain) {
-                addResource('grain', event.reward.grain);
-            }
-            if (event.reward.soldiers) {
-                addResource('soldiers', event.reward.soldiers);
-            }
-            if (event.reward.territory) {
-                addResource('territory', getResource('territory') + event.reward.territory);
-            }
-            
-            console.log(`触发历史事件: ${event.name}`);
-            showEventNotification(event);
-        }
+// 粮草换金币
+function tradeGrainForGold(times) {
+    const maxTimes = Math.floor(getResource('grain') / TRADE_RATES.grainToGold.grainCost);
+    const actual = Math.min(times, maxTimes);
+    if (actual <= 0) return;
+    
+    setResource('grain', getResource('grain') - TRADE_RATES.grainToGold.grainCost * actual);
+    addResource('gold', TRADE_RATES.grainToGold.goldGain * actual);
+    renderUI();
+}
+
+// 粮草+金币换兵力
+function tradeRecruitSoldiers(times) {
+    const r = TRADE_RATES.recruit;
+    const maxByGrain = Math.floor(getResource('grain') / r.grainCost);
+    const maxByGold = Math.floor(getResource('gold') / r.goldCost);
+    const actual = Math.min(times, maxByGrain, maxByGold);
+    if (actual <= 0) return;
+    
+    setResource('grain', getResource('grain') - r.grainCost * actual);
+    setResource('gold', getResource('gold') - r.goldCost * actual);
+    addResource('soldiers', r.soldierGain * actual);
+    renderUI();
+}
+
+// 兵力换声望
+function tradeSoldiersForPrestige(times) {
+    const maxTimes = Math.floor(getResource('soldiers') / TRADE_RATES.prestige.soldierCost);
+    const actual = Math.min(times, maxTimes);
+    if (actual <= 0) return;
+    
+    setResource('soldiers', getResource('soldiers') - TRADE_RATES.prestige.soldierCost * actual);
+    addResource('prestige', TRADE_RATES.prestige.prestigeGain * actual);
+    renderUI();
+}
+
+// 挑战历史事件（玩家点击触发）
+function challengeEvent(eventId) {
+    if (isEventTriggered(eventId) || !canChallengeEvent(eventId)) return;
+    
+    const event = HISTORICAL_EVENTS.find(e => e.id === eventId);
+    if (!event) return;
+    
+    triggerEvent(event.id);
+    
+    // 发放奖励
+    if (event.reward.prestige) {
+        addResource('prestige', event.reward.prestige);
     }
+    if (event.reward.gold) {
+        addResource('gold', event.reward.gold);
+    }
+    if (event.reward.grain) {
+        addResource('grain', event.reward.grain);
+    }
+    if (event.reward.soldiers) {
+        addResource('soldiers', event.reward.soldiers);
+    }
+    if (event.reward.territory) {
+        addResource('territory', event.reward.territory);
+    }
+    
+    console.log(`触发历史事件: ${event.name}`);
+    showEventNotification(event);
+    renderUI();
+}
+
+// 攻城
+function attackCity(cityId) {
+    if (!canAttackCity(cityId)) return;
+    
+    const city = CITIES.find(c => c.id === cityId);
+    if (!city) return;
+    
+    // 消耗资源
+    spendResources(city.cost);
+    
+    // 标记征服
+    gameState.conqueredCities[cityId] = true;
+    
+    // 发放奖励
+    for (const [res, amt] of Object.entries(city.reward)) {
+        addResource(res, amt);
+    }
+    
+    console.log(`征服城市: ${city.name}`);
+    
+    // 显示征服通知
+    const notification = document.createElement('div');
+    notification.className = 'event-notification';
+    notification.innerHTML = `
+        <h3>⚔️ ${t('conquered')}</h3>
+        <h4>${t(city.id + 'Name')}</h4>
+        <p>${city.bonusDesc}</p>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 1000);
+    }, 5000);
+    
+    // 检查天下一统
+    if (checkUnification()) {
+        showUnificationVictory();
+    }
+    
+    renderUI();
+}
+
+// 天下一统胜利画面
+function showUnificationVictory() {
+    const overlay = document.createElement('div');
+    overlay.className = 'unification-overlay';
+    overlay.innerHTML = `
+        <div class="unification-content">
+            <h1>${t('unificationTitle')}</h1>
+            <p>${t('unificationDesc')}</p>
+            <button class="trade-btn" style="margin-top:2rem;padding:0.8rem 2rem;font-size:1.2rem">${t('save')}</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('button').addEventListener('click', () => overlay.remove());
 }
 
 // 显示事件通知
@@ -166,19 +251,51 @@ function selectFaction(factionId) {
     gameState.faction = factionId;
     console.log(`选择势力: ${FACTIONS[factionId].name}`);
     
-    // 隐藏弹窗
-    const modal = document.getElementById('faction-modal');
-    if (modal) {
-        modal.classList.remove('active');
-    }
+    // 播放选中动画：选中卡片高亮，其他卡片淡出
+    const cards = document.querySelectorAll('.faction-card');
+    cards.forEach(card => {
+        if (card.dataset.faction === factionId) {
+            card.classList.add('selected');
+        } else {
+            card.classList.add('unselected');
+        }
+    });
     
-    // 开始游戏循环
-    if (!gameStarted) {
-        gameStarted = true;
-        gameLoop();
-    }
-    
-    renderUI();
+    // 延迟显示确认提示，让选中动画先播放
+    setTimeout(() => {
+        const faction = FACTIONS[factionId];
+        // 创建确认提示
+        const toast = document.createElement('div');
+        toast.className = 'faction-toast';
+        toast.innerHTML = `${faction.name}<div class="toast-desc">${faction.description}</div>`;
+        document.body.appendChild(toast);
+        
+        // 触发toast显示动画
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+        
+        // 再延迟后关闭弹窗和toast
+        setTimeout(() => {
+            toast.classList.remove('show');
+            
+            const modal = document.getElementById('faction-modal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+            
+            // 移除toast
+            setTimeout(() => toast.remove(), 400);
+            
+            // 开始游戏循环
+            if (!gameStarted) {
+                gameStarted = true;
+                gameLoop();
+            }
+            
+            renderUI();
+        }, 1200);
+    }, 600);
 }
 
 // 初始化游戏

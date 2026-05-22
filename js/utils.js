@@ -78,14 +78,15 @@ function canRecruitHero(heroId) {
     if (!hero) return false;
     if (hasHero(heroId)) return false;
     
+    // 检查历史事件解锁
+    if (hero.unlockEvent && !isEventTriggered(hero.unlockEvent)) {
+        return false;
+    }
+    
     for (const [resource, amount] of Object.entries(hero.cost)) {
         if (getResource(resource) < amount) {
             return false;
         }
-    }
-    
-    if (gameState.resources.prestige < hero.unlockPrestige) {
-        return false;
     }
     
     return true;

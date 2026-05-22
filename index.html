@@ -54,11 +54,13 @@
                 <span class="resource-icon">🏯</span>
                 <span class="resource-name">领土</span>
                 <span class="resource-amount" id="territory-amount">0</span>
+                <span class="resource-rate" id="territory-rate">+0/s</span>
             </div>
             <div class="resource" id="resource-prestige">
                 <span class="resource-icon">⭐</span>
                 <span class="resource-name">声望</span>
                 <span class="resource-amount" id="prestige-amount">0</span>
+                <span class="resource-rate" id="prestige-rate">+0/s</span>
             </div>
         </header>
 
@@ -68,6 +70,40 @@
             <section id="buildings-section">
                 <h2>建筑</h2>
                 <div id="buildings-container"></div>
+            </section>
+
+            <!-- 交易区 -->
+            <section id="trade-section">
+                <h2>交易</h2>
+                <div id="trade-container">
+                    <div class="trade-card">
+                        <div class="trade-info">
+                            <span class="trade-from" id="trade1-from">🌾 100 粮草</span>
+                            <span class="trade-arrow">→</span>
+                            <span class="trade-to" id="trade1-to">💰 50 金币</span>
+                        </div>
+                        <input type="number" id="trade1-amount" class="trade-input" value="1" min="1" max="999">
+                        <button id="trade1-btn" class="trade-btn">交易</button>
+                    </div>
+                    <div class="trade-card">
+                        <div class="trade-info">
+                            <span class="trade-from" id="trade2-from">🌾 80 粮草 + 💰 40 金币</span>
+                            <span class="trade-arrow">→</span>
+                            <span class="trade-to" id="trade2-to">⚔️ 30 兵力</span>
+                        </div>
+                        <input type="number" id="trade2-amount" class="trade-input" value="1" min="1" max="999">
+                        <button id="trade2-btn" class="trade-btn">征兵</button>
+                    </div>
+                    <div class="trade-card">
+                        <div class="trade-info">
+                            <span class="trade-from" id="trade3-from">⚔️ 200 兵力</span>
+                            <span class="trade-arrow">→</span>
+                            <span class="trade-to" id="trade3-to">⭐ 10 声望</span>
+                        </div>
+                        <input type="number" id="trade3-amount" class="trade-input" value="1" min="1" max="999">
+                        <button id="trade3-btn" class="trade-btn">扬名</button>
+                    </div>
+                </div>
             </section>
 
             <!-- 武将区 -->
@@ -80,6 +116,45 @@
             <section id="events-section">
                 <h2>历史事件</h2>
                 <div id="events-container"></div>
+            </section>
+
+            <!-- 征伐天下 -->
+            <section id="map-section">
+                <h2>征伐天下</h2>
+                <div id="map-progress">
+                    <span id="map-progress-text">0 / 24</span>
+                </div>
+                <div id="map-progress-bar">
+                    <div id="map-progress-fill" style="width: 0%"></div>
+                </div>
+                <div id="map-container">
+                    <svg id="map-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <!-- 地形区域 -->
+                        <ellipse cx="45" cy="25" rx="30" ry="15" fill="rgba(44,95,124,0.06)" />
+                        <ellipse cx="25" cy="55" rx="18" ry="18" fill="rgba(196,30,58,0.05)" />
+                        <ellipse cx="65" cy="48" rx="20" ry="16" fill="rgba(74,124,89,0.05)" />
+
+                        <!-- 黄河 -->
+                        <path d="M 8,18 C 15,20 20,28 28,26 C 35,24 38,30 42,32 C 48,34 55,28 62,24 C 68,21 75,22 92,20"
+                              stroke="rgba(44,95,124,0.25)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+                        <!-- 长江 -->
+                        <path d="M 10,52 C 18,50 24,54 30,52 C 36,50 40,54 46,52 C 52,50 56,48 60,50 C 66,52 72,48 78,44 C 84,40 88,42 95,40"
+                              stroke="rgba(44,95,124,0.25)" stroke-width="1" fill="none" stroke-linecap="round"/>
+
+                        <!-- 势力标注 -->
+                        <text x="48" y="16" class="map-svg-label wei">魏</text>
+                        <text x="22" y="60" class="map-svg-label shu">蜀</text>
+                        <text x="68" y="38" class="map-svg-label wu">吴</text>
+
+                        <!-- 城市连线(道路) -->
+                        <g id="map-roads"></g>
+
+                        <!-- 城市节点(由JS渲染) -->
+                        <g id="map-cities"></g>
+                    </svg>
+                </div>
+                <div id="map-list-view"></div>
             </section>
         </main>
 
